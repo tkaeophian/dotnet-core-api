@@ -1,11 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ardalis.ListStartupServices;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Sample.Api;
+using Sample.Api.Filters;
+using Sample.Api.Transformers;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<RequireHttpsOrCloseAttribute>();
+    options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
+});
 builder.Services.AddApiVersioning(opt =>
 {
     opt.DefaultApiVersion = new ApiVersion(1, 0);
@@ -24,7 +32,13 @@ builder.Services.AddVersionedApiExplorer(setup =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks();
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+builder.Services.Configure<ServiceConfig>(config =>
+{
+    config.Services = new List<ServiceDescriptor>(builder.Services);
+    config.Path = "/list-services";
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -43,9 +57,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
+app.UseHealthChecks("/health");
 app.Run();
