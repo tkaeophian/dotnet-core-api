@@ -34,7 +34,7 @@ public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
     /// </summary>
     /// <param name="name"></param>
     /// <param name="options"></param>
-    public void Configure(string name, SwaggerGenOptions options)
+    public void Configure(string? name, SwaggerGenOptions options)
     {
         Configure(options);
     }
@@ -45,15 +45,15 @@ public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
     /// <param name="description"></param>
     /// <returns>Information about the API</returns>
     private OpenApiInfo CreateVersionInfo(
-        ApiVersionDescription desc)
+        ApiVersionDescription description)
     {
         var info = new OpenApiInfo()
         {
             Title = ".NET Core Sample Web API",
-            Version = desc.ApiVersion.ToString()
+            Version = description.ApiVersion.ToString()
         };
 
-        if (desc.IsDeprecated)
+        if (description.IsDeprecated)
         {
             info.Description += " This API version has been deprecated. Please use one of the new APIs available from the explorer.";
         }
