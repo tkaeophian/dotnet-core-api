@@ -7,7 +7,7 @@ namespace Sample.Api.Controllers.v1;
 [Route("api/[controller]")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
-public class WeatherForecastController : ControllerBase
+public class WeatherForecastController : ApiControllerBase
 {
     [MapToApiVersion("1.0")]
     [HttpGet]
